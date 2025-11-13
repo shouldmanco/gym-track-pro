@@ -1,0 +1,5 @@
+{
+  "name": "GymTrack Pro",
+  "description": "An elegant gym tracking application to log your workouts, view them on a calendar, and visualize your progress with charts. All data is stored locally in your browser using IndexedDB.",
+  "requestFramePermissions": []
+}
