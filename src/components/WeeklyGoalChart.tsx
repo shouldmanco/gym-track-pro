@@ -6,6 +6,7 @@ import { getWeekRange } from '../utils/date';
 interface WeeklyGoalChartProps {
   workouts: Workout[];
   currentDate: Date;
+  isDarkMode?: boolean;
 }
 
 const GOALS: Partial<Record<WorkoutType, number>> = {
@@ -16,9 +17,11 @@ const GOALS: Partial<Record<WorkoutType, number>> = {
 const GOAL_TYPES = Object.keys(GOALS) as WorkoutType[];
 const TOTAL_GOAL = Object.values(GOALS).reduce((sum, val) => sum + val, 0);
 
-const COLORS = ['#22c55e', '#475569']; // Green for completed, Slate for remaining
-
-export const WeeklyGoalChart: React.FC<WeeklyGoalChartProps> = ({ workouts, currentDate }) => {
+export const WeeklyGoalChart: React.FC<WeeklyGoalChartProps> = ({ workouts, currentDate, isDarkMode = true }) => {
+  const completedColor = isDarkMode ? '#22c55e' : '#0ea5e9';
+  const remainingColor = isDarkMode ? '#475569' : '#e5e7eb';
+  const textColor = isDarkMode ? '#f1f5f9' : '#1e293b';
+  const COLORS = [completedColor, remainingColor];
   const chartData = useMemo(() => {
     const { start, end } = getWeekRange(currentDate);
 
@@ -60,7 +63,11 @@ export const WeeklyGoalChart: React.FC<WeeklyGoalChartProps> = ({ workouts, curr
         <ResponsiveContainer width="100%" height="100%">
             <PieChart>
                 <Tooltip 
-                    contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', color: '#e2e8f0' }}
+                    contentStyle={{ 
+                      backgroundColor: isDarkMode ? '#1e293b' : '#ffffff', 
+                      border: `1px solid ${isDarkMode ? '#334155' : '#e5e7eb'}`, 
+                      color: isDarkMode ? '#e2e8f0' : '#1e293b' 
+                    }}
                     formatter={(value: number, name: string) => [`${value} entrenamientos`, name]}
                 />
                 <Pie
@@ -79,11 +86,11 @@ export const WeeklyGoalChart: React.FC<WeeklyGoalChartProps> = ({ workouts, curr
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                 </Pie>
-                <Legend wrapperStyle={{ color: '#e2e8f0', paddingTop: '10px' }}/>
+                <Legend wrapperStyle={{ color: textColor, paddingTop: '10px' }}/>
             </PieChart>
         </ResponsiveContainer>
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <span className="text-3xl font-bold text-white">{`${progressPercent}%`}</span>
+            <span className={`text-3xl font-bold ${textColor}`}>{`${progressPercent}%`}</span>
         </div>
     </div>
   );

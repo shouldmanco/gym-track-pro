@@ -12,13 +12,15 @@ interface CalendarViewProps {
   setCurrentDate: (date: Date) => void;
   workouts: Workout[];
   onDataChange: () => void;
+  isDarkMode?: boolean;
 }
 
 export const CalendarView: React.FC<CalendarViewProps> = ({
   currentDate,
   setCurrentDate,
   workouts,
-  onDataChange
+  onDataChange,
+  isDarkMode = true
 }) => {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isDayModalOpen, setIsDayModalOpen] = useState(false);
@@ -134,17 +136,25 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   return (
     <div className="p-4 md:p-8">
       <div className="flex justify-between items-center mb-6">
-        <button onClick={() => changeMonth(-1)} className="p-2 rounded-full bg-slate-700 hover:bg-slate-600 transition-colors duration-200" aria-label="Previous month">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+        <button 
+          onClick={() => changeMonth(-1)} 
+          className={`p-2 rounded-full transition-colors duration-200 ${isDarkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-blue-500 hover:bg-blue-600'}`} 
+          aria-label="Previous month"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
         </button>
-        <h2 className="text-2xl md:text-3xl font-bold capitalize text-center">
+        <h2 className={`text-2xl md:text-3xl font-bold capitalize text-center ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
           {currentDate.toLocaleString('es-ES', { month: 'long', year: 'numeric' })}
         </h2>
-        <button onClick={() => changeMonth(1)} className="p-2 rounded-full bg-slate-700 hover:bg-slate-600 transition-colors duration-200" aria-label="Next month">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+        <button 
+          onClick={() => changeMonth(1)} 
+          className={`p-2 rounded-full transition-colors duration-200 ${isDarkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-blue-500 hover:bg-blue-600'}`} 
+          aria-label="Next month"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
         </button>
       </div>
-      <div className="grid grid-cols-7 gap-2 text-center font-semibold text-gray-400 mb-2">
+      <div className={`grid grid-cols-7 gap-2 text-center font-semibold mb-2 ${isDarkMode ? 'text-gray-400' : 'text-slate-600'}`}>
         {daysOfWeek.map(day => <div key={day}>{day}</div>)}
       </div>
       <div className="grid grid-cols-7 gap-2">
@@ -155,11 +165,15 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             const isToday = new Date().toISOString().split('T')[0] === dateStr;
 
             const dayClasses = `p-2 border rounded-md flex flex-col cursor-pointer transition-colors duration-200 min-h-[100px] ${
-                isCurrentMonth ? 'border-slate-700 hover:bg-slate-700' : 'border-slate-800 text-slate-500'
-            } ${isToday ? 'bg-slate-700/50' : ''}`;
+              isDarkMode 
+                ? `${isCurrentMonth ? 'border-slate-700 hover:bg-slate-700 bg-slate-800' : 'border-slate-800 text-slate-500 bg-slate-900'}`
+                : `${isCurrentMonth ? 'border-blue-300 hover:bg-blue-100 bg-white' : 'border-gray-200 text-gray-400 bg-gray-50'}`
+            } ${isToday ? (isDarkMode ? 'bg-slate-700/50' : 'bg-blue-100 border-blue-400') : ''}`;
             
             const dateNumberClasses = `font-bold ${
-                isCurrentMonth ? (isToday ? 'text-blue-400' : 'text-white') : ''
+              isDarkMode
+                ? (isCurrentMonth ? (isToday ? 'text-cyan-400' : 'text-slate-100') : '')
+                : (isCurrentMonth ? (isToday ? 'text-blue-600' : 'text-slate-900') : '')
             }`;
 
             return (

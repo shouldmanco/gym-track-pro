@@ -1,8 +1,9 @@
-import { Workout, NewWorkout } from '../types';
+import { Workout, NewWorkout, BodyMetric, NewBodyMetric } from '../types';
 
 const DB_NAME = 'GymTrackDB';
-const DB_VERSION = 1;
-const STORE_NAME = 'workouts';
+const DB_VERSION = 2;
+const WORKOUTS_STORE = 'workouts';
+const BODY_METRICS_STORE = 'bodyMetrics';
 
 let db: IDBDatabase;
 
@@ -26,12 +27,21 @@ export const initDB = (): Promise<IDBDatabase> => {
 
     request.onupgradeneeded = (event) => {
       const dbInstance = (event.target as IDBOpenDBRequest).result;
-      if (!dbInstance.objectStoreNames.contains(STORE_NAME)) {
-        const objectStore = dbInstance.createObjectStore(STORE_NAME, {
+      
+      if (!dbInstance.objectStoreNames.contains(WORKOUTS_STORE)) {
+        const objectStore = dbInstance.createObjectStore(WORKOUTS_STORE, {
           keyPath: 'id',
           autoIncrement: true,
         });
         objectStore.createIndex('date', 'date', { unique: false });
+      }
+
+      if (!dbInstance.objectStoreNames.contains(BODY_METRICS_STORE)) {
+        const metricsStore = dbInstance.createObjectStore(BODY_METRICS_STORE, {
+          keyPath: 'id',
+          autoIncrement: true,
+        });
+        metricsStore.createIndex('date', 'date', { unique: false });
       }
     };
   });
@@ -40,17 +50,17 @@ export const initDB = (): Promise<IDBDatabase> => {
 export const addWorkout = async (workout: NewWorkout): Promise<Workout> => {
   const db = await initDB();
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
+    const transaction = db.transaction(WORKOUTS_STORE, 'readwrite');
+    const store = transaction.objectStore(WORKOUTS_STORE);
     const request = store.add(workout);
 
-    transaction.oncomplete = () => {
+    request.onsuccess = () => {
       resolve({ ...workout, id: request.result as number });
     };
 
-    transaction.onerror = () => {
-      console.error('Transaction error adding workout:', transaction.error);
-      reject(transaction.error);
+    request.onerror = () => {
+      console.error('Request error adding workout:', request.error);
+      reject(request.error);
     };
   });
 };
@@ -58,8 +68,8 @@ export const addWorkout = async (workout: NewWorkout): Promise<Workout> => {
 export const getAllWorkouts = async (): Promise<Workout[]> => {
   const db = await initDB();
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction(STORE_NAME, 'readonly');
-    const store = transaction.objectStore(STORE_NAME);
+    const transaction = db.transaction(WORKOUTS_STORE, 'readonly');
+    const store = transaction.objectStore(WORKOUTS_STORE);
     const request = store.getAll();
 
     request.onsuccess = () => {
@@ -76,36 +86,108 @@ export const getAllWorkouts = async (): Promise<Workout[]> => {
 export const updateWorkout = async (workout: Workout): Promise<Workout> => {
     const db = await initDB();
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction(STORE_NAME, 'readwrite');
-        const store = transaction.objectStore(STORE_NAME);
-        store.put(workout);
+        const transaction = db.transaction(WORKOUTS_STORE, 'readwrite');
+        const store = transaction.objectStore(WORKOUTS_STORE);
+        const request = store.put(workout);
 
-        transaction.oncomplete = () => {
+        request.onsuccess = () => {
             resolve(workout);
         };
 
-        transaction.onerror = () => {
-            console.error('Transaction error updating workout:', transaction.error);
-            reject(transaction.error);
+        request.onerror = () => {
+            console.error('Request error updating workout:', request.error);
+            reject(request.error);
         };
     });
 };
 
-
 export const deleteWorkout = async (id: number): Promise<void> => {
   const db = await initDB();
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
-    store.delete(id);
+    const transaction = db.transaction(WORKOUTS_STORE, 'readwrite');
+    const store = transaction.objectStore(WORKOUTS_STORE);
+    const request = store.delete(id);
 
-    transaction.oncomplete = () => {
+    request.onsuccess = () => {
       resolve();
     };
 
-    transaction.onerror = () => {
-      console.error('Transaction error deleting workout:', transaction.error);
-      reject(transaction.error);
+    request.onerror = () => {
+      console.error('Request error deleting workout:', request.error);
+      reject(request.error);
+    };
+  });
+};
+
+// Body Metrics operations
+export const addBodyMetric = async (metric: NewBodyMetric): Promise<BodyMetric> => {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(BODY_METRICS_STORE, 'readwrite');
+    const store = transaction.objectStore(BODY_METRICS_STORE);
+    const request = store.add(metric);
+
+    request.onsuccess = () => {
+      resolve({ ...metric, id: request.result as number });
+    };
+
+    request.onerror = () => {
+      console.error('Request error adding body metric:', request.error);
+      reject(request.error);
+    };
+  });
+};
+
+export const getAllBodyMetrics = async (): Promise<BodyMetric[]> => {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(BODY_METRICS_STORE, 'readonly');
+    const store = transaction.objectStore(BODY_METRICS_STORE);
+    const request = store.getAll();
+
+    request.onsuccess = () => {
+      resolve(request.result);
+    };
+
+    request.onerror = () => {
+      console.error('Error getting all body metrics:', request.error);
+      reject(request.error);
+    };
+  });
+};
+
+export const updateBodyMetric = async (metric: BodyMetric): Promise<BodyMetric> => {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(BODY_METRICS_STORE, 'readwrite');
+    const store = transaction.objectStore(BODY_METRICS_STORE);
+    const request = store.put(metric);
+
+    request.onsuccess = () => {
+      resolve(metric);
+    };
+
+    request.onerror = () => {
+      console.error('Request error updating body metric:', request.error);
+      reject(request.error);
+    };
+  });
+};
+
+export const deleteBodyMetric = async (id: number): Promise<void> => {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(BODY_METRICS_STORE, 'readwrite');
+    const store = transaction.objectStore(BODY_METRICS_STORE);
+    const request = store.delete(id);
+
+    request.onsuccess = () => {
+      resolve();
+    };
+
+    request.onerror = () => {
+      console.error('Request error deleting body metric:', request.error);
+      reject(request.error);
     };
   });
 };

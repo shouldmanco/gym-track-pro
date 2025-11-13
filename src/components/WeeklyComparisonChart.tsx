@@ -7,9 +7,10 @@ import { getWeekRange } from '../utils/date';
 interface WeeklyComparisonChartProps {
     workouts: Workout[];
     currentDate: Date;
+    isDarkMode?: boolean;
 }
 
-export const WeeklyComparisonChart: React.FC<WeeklyComparisonChartProps> = ({ workouts, currentDate }) => {
+export const WeeklyComparisonChart: React.FC<WeeklyComparisonChartProps> = ({ workouts, currentDate, isDarkMode = true }) => {
     const chartData = useMemo(() => {
         const { start: currentWeekStart, end: currentWeekEnd } = getWeekRange(currentDate);
         
@@ -45,6 +46,15 @@ export const WeeklyComparisonChart: React.FC<WeeklyComparisonChartProps> = ({ wo
 
     }, [workouts, currentDate]);
 
+    const gridColor = isDarkMode ? '#475569' : '#e5e7eb';
+    const axisColor = isDarkMode ? '#94a3b8' : '#64748b';
+    const tooltipBg = isDarkMode ? '#1e293b' : '#ffffff';
+    const tooltipBorder = isDarkMode ? '#334155' : '#e5e7eb';
+    const tooltipText = isDarkMode ? '#e2e8f0' : '#1e293b';
+    const tooltipCursor = isDarkMode ? 'rgba(100, 116, 139, 0.1)' : 'rgba(59, 130, 246, 0.1)';
+    const currentWeekColor = isDarkMode ? '#3b82f6' : '#0ea5e9';
+    const prevWeekColor = isDarkMode ? '#64748b' : '#cbd5e1';
+
     return (
         <div style={{ height: '300px' }}>
             <ResponsiveContainer width="100%" height="100%">
@@ -52,16 +62,16 @@ export const WeeklyComparisonChart: React.FC<WeeklyComparisonChartProps> = ({ wo
                     data={chartData}
                     margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
                 >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
-                    <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
-                    <YAxis stroke="#94a3b8" allowDecimals={true} width={30} />
+                    <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                    <XAxis dataKey="name" stroke={axisColor} fontSize={12} />
+                    <YAxis stroke={axisColor} allowDecimals={true} width={30} />
                     <Tooltip
-                        contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', color: '#e2e8f0' }}
-                        cursor={{ fill: 'rgba(100, 116, 139, 0.1)' }}
+                        contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
+                        cursor={{ fill: tooltipCursor }}
                     />
-                    <Legend wrapperStyle={{ color: '#e2e8f0' }} />
-                    <Bar dataKey="Semana Anterior" fill="#64748b" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="Semana Actual" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                    <Legend wrapperStyle={{ color: axisColor }} />
+                    <Bar dataKey="Semana Anterior" fill={prevWeekColor} radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Semana Actual" fill={currentWeekColor} radius={[4, 4, 0, 0]} />
                 </BarChart>
             </ResponsiveContainer>
         </div>
