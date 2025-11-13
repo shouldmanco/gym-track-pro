@@ -1,4 +1,4 @@
-import { WorkoutType, WorkoutDuration } from '../types';
+import { WorkoutType, WorkoutDuration } from './types';
 
 export const WORKOUT_TYPES: WorkoutType[] = [
   WorkoutType.Pierna,

@@ -1,4 +1,4 @@
-import { Workout, NewWorkout } from '../../types';
+import { Workout, NewWorkout } from '../types';
 
 const DB_NAME = 'GymTrackDB';
 const DB_VERSION = 1;

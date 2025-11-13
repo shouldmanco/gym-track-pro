@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { CalendarView } from './components/CalendarView';
 import { ChartsContainer } from './components/ChartsContainer';
-import { Workout } from '../types';
+import { Workout } from './types';
 import * as db from './services/db';
 
 const App: React.FC = () => {

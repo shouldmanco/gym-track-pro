@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { Workout, WorkoutType, WorkoutDuration } from '../types';
-import { getWeekRange } from '../../utils/date';
+import { getWeekRange } from '../utils/date';
 
 interface WeeklyGoalChartProps {
   workouts: Workout[];

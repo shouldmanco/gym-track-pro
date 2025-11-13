@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Workout, WorkoutType, WorkoutDuration } from '../types';
 import { WORKOUT_TYPES } from '../constants';
-import { getWeekRange } from '../../utils/date';
+import { getWeekRange } from '../utils/date';
 
 interface WeeklyComparisonChartProps {
     workouts: Workout[];
